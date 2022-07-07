@@ -1,0 +1,17 @@
+package adjunctions
+
+sourcedir = "src"
+
+modules = Data.Distributive
+        , Data.Functor.Adjunction
+        , Data.Functor.Contravariant
+        , Data.Functor.Contravariant.Adjunction
+        , Data.Functor.Contravariant.Rep
+        , Data.Functor.Contravariant.Yoneda
+        , Data.Functor.Product
+        , Data.Functor.Rep
+        , Data.Functor.Sum
+        , Data.Functor1
+        , Data.Functor1.Applied
+
+opts = "-p contrib profunctors comonad"
