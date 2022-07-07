@@ -1,5 +1,7 @@
 module Data.Functor.Sum
 
+import Data.Contravariant
+
 public export
 data Sum : (Type -> Type) -> (Type -> Type) -> Type -> Type where
   InL : (f a) -> Sum f g a
@@ -19,3 +21,8 @@ export
 implementation (Traversable f, Traversable g) => Traversable (Sum f g) where
   traverse f (InL fa) = InL <$> traverse f fa
   traverse f (InR ga) = InR <$> traverse f ga
+
+export
+implementation (Contravariant f, Contravariant g) => Contravariant (Sum f g) where
+  contramap f (InL fa) = InL $ contramap f fa
+  contramap f (InR ga) = InR $ contramap f ga
