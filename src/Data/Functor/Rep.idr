@@ -1,5 +1,7 @@
 module Data.Functor.Rep
 
+import Control.Comonad
+import Control.Comonad.Trans
 import Control.Monad.Identity
 import Control.Monad.Reader
 import Data.Morphisms
@@ -232,6 +234,49 @@ implementation (Representable f r, Representable g r') => Representable (Product
   index (Pair a _) (Left i)  = index a i
   index (Pair _ b) (Right j) = index b j
   tabulate f = Pair (tabulate (f . Left)) (tabulate (f . Right))
+
+public export
+record Co (f : Type -> Type) (a : Type) where
+  constructor MkCo
+  unCo : f a
+
+export
+implementation Functor f => Functor (Co f) where
+  map f = MkCo . map f . unCo
+
+export
+implementation Distributive f => Distributive (Co f) where
+  distribute = MkCo . distribute . map unCo
+
+export
+implementation Representable f r => Representable (Co f) r where
+  tabulate = MkCo . tabulate
+  index = index . unCo
+
+export
+implementation Representable f r => Applicative (Co f) where
+  pure = pureRep {r}
+  (<*>) = apRep {r}
+
+export
+implementation Representable f r => Monad (Co f) where
+  (>>=) = bindRep {r}
+  join a = bindRep {r} a id
+
+export
+implementation Representable f r => MonadReader r (Co f) where
+  ask = askRep {r}
+  local = localRep {r}
+
+export
+implementation (Representable f r, Monoid r) => Comonad (Co f) where
+  extract = extractRep {r}
+  extend = extendRep {r}
+  duplicate = duplicateRep {r}
+
+export
+implementation ComonadTrans Co where
+  lower (MkCo f) = f
 
 export
 liftR2 : Representable f r => (a -> b -> c) -> f a -> f b -> f c
