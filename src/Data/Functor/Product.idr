@@ -3,8 +3,10 @@ module Data.Functor.Product
 import Data.Contravariant
 
 public export
-data Product : (Type -> Type) -> (Type -> Type) -> Type -> Type where
-  Pair : (f a) -> (g a) -> Product f g a
+record Product (f : Type -> Type) (g : Type -> Type) (a : Type) where
+  constructor Pair
+  fst : f a
+  snd : g a
 
 export
 implementation (Functor f, Functor g) => Functor (Product f g) where
