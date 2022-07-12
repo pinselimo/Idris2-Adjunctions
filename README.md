@@ -8,8 +8,13 @@ Contains
 
   * Adjunctions
 
-Misses
-------
+  * Contravariant Adjunctions
+
+  * Distributive Functors
+
+  * Functor Sums and Products
+
+  * Adjoint Monads and Comonads
 
   * Representable Monads and Comonads
 
