@@ -29,10 +29,10 @@ implementation Representable f r => Representable (YonedaT f) r where
 
 export
 implementation (Functor g, Functor f, Adjunction f g r) => Adjunction (YonedaT f) (YonedaT g) r where
-  unit = liftYonedaT . contramap lowerYonedaT . unit {g=g, r=r}
-  counit = liftYonedaT . contramap lowerYonedaT . counit {r=r}
-  leftAdjunct h = liftYonedaT . contramap h . map liftYonedaT . unit {g=g, r=r}
-  rightAdjunct h = liftYonedaT . contramap h . map liftYonedaT . counit {f=f, r=r}
+  unit = liftYonedaT . contramap lowerYonedaT . unit {g, r}
+  counit = liftYonedaT . contramap lowerYonedaT . counit {r}
+  leftAdjunct h = liftYonedaT . contramap h . map liftYonedaT . unit {g, r}
+  rightAdjunct h = liftYonedaT . contramap h . map liftYonedaT . counit {f, r}
 
 export
 implementation Eq (f a) => Eq (YonedaT f a) where

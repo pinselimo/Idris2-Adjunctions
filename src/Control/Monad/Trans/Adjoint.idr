@@ -45,5 +45,5 @@ implementation (Adjunction f g r, Monad m) => Monad (AdjointT f g m) where
 
 export
 implementation (Adjunction f g r, Traversable f) => MonadTrans (AdjointT f g) where
-  lift = AdjoinT . map (sequence {t=f}) . unit {f=f, u=g, r=r}
+  lift = AdjoinT . map sequence . unit {f, r}
 

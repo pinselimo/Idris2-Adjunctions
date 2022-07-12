@@ -23,7 +23,7 @@ tabulated = dimap tabulate (map index)
 
 export
 contramapRep : Representable f x => (a -> b) -> f b -> f a
-contramapRep g = tabulate {f=f, g=x} . (. g) . index
+contramapRep g = tabulate {f, g=x} . (. g) . index
 
 export
 implementation Representable (Op r) r where

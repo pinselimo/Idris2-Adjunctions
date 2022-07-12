@@ -19,23 +19,23 @@ interface Distributive f => Representable f r where
 
 export
 tabulateAlg : Representable f r => ((forall x. f x -> x) -> a) -> f a
-tabulateAlg f = tabulate $ \i => f $ flip (index {r=r}) i
+tabulateAlg f = tabulate $ \i => f $ flip (index {r}) i
 
 export
 cotraverse1 : (Functor1 w, Representable f r) => (w Identity -> a) -> w f -> f a
-cotraverse1 f w = tabulateAlg {r=r} (f . flip map1Identity w)
+cotraverse1 f w = tabulateAlg {r} (f . flip map1Identity w)
 
 export
 distribute1 : (Functor1 w, Representable f r) => w f -> f (w Identity)
-distribute1 = cotraverse1 {r=r} id
+distribute1 = cotraverse1 {r} id
 
 export
 collect1 : (Functor1 w, Representable f r) => (forall x. g x -> f x) -> w g -> f (w Identity)
-collect1 f = distribute1 {r=r} . map1 f
+collect1 f = distribute1 {r} . map1 f
 
 export
 cotraverseMap1 : (Functor1 w, Representable f r) => (w Identity -> a) -> (forall x. g x -> f x) -> w g -> f a
-cotraverseMap1 f g = cotraverse1 {r=r} f . map1 g
+cotraverseMap1 f g = cotraverse1 {r} f . map1 g
 
 data PairOf : (a : Type) -> (b : Type) -> (f : Type -> Type) -> Type where
   MkPairOf : f a -> f b -> PairOf a b f
@@ -45,17 +45,17 @@ implementation Functor1 (PairOf a b) where
 export
 mzipWithRep : Representable f r => (a -> b -> c) -> f a -> f b -> f c
 mzipWithRep f as bs =
-  cotraverse1 {r=r} (\(MkPairOf (Id a) (Id b)) => f a b) (MkPairOf as bs)
+  cotraverse1 {r} (\(MkPairOf (Id a) (Id b)) => f a b) (MkPairOf as bs)
 
 export
 mzipRep : Representable f r => f a -> f b -> f (a, b)
-mzipRep = mzipWithRep {r=r} (,)
+mzipRep = mzipWithRep {r} (,)
 
 %inline
 export
 tabulated : (Representable f r, Representable g r', Profunctor p, Functor h)
           => p (f a) (h (g b)) -> p (r -> a) (h (r' -> b))
-tabulated = dimap (tabulate {r=r}) (map (index {r=r'}))
+tabulated = dimap (tabulate {r}) (map (index {r=r'}))
 
 -- Default definitions
 export
@@ -64,11 +64,11 @@ mapRep = map
 
 export
 pureRep : Representable f r => a -> f a
-pureRep = tabulate {r=r} . const
+pureRep = tabulate {r} . const
 
 export
 apRep : Representable f r => f (a -> b) -> f a -> f b
-apRep = mzipWithRep {r=r} ($)
+apRep = mzipWithRep {r} ($)
 
 export
 askRep : Representable f r => f r
@@ -76,11 +76,11 @@ askRep = tabulate id
 
 export
 joinRep : Representable f r => f (f a) -> f a
-joinRep ffa = apRep {r=r} (map (index {r=r}) ffa) askRep
+joinRep ffa = apRep {r} (map (index {r}) ffa) askRep
 
 export
 bindRep : Representable f r => f a -> (a -> f b) -> f b
-bindRep m = joinRep {r=r} . (<$> m)
+bindRep m = joinRep {r} . (<$> m)
 
 export
 localRep : Representable f r => (r -> r) -> f a -> f a
@@ -97,15 +97,15 @@ implementation Functor g => Functor1 (Composed g a) where
 
 export
 cotraverseRep : (Representable f r, Functor w) => (w a -> b) -> w (f a) -> f b
-cotraverseRep f = cotraverse1 {r=r} (f . map runIdentity . runComposed) . (Compose {g=w})
+cotraverseRep f = cotraverse1 {r} (f . map runIdentity . runComposed) . (Compose {g=w})
 
 export
 distributeRep : (Representable f r, Functor w) => w (f a) -> f (w a)
-distributeRep = cotraverseRep {r=r} id
+distributeRep = cotraverseRep {r} id
 
 export
 collectRep : (Representable f r, Functor w) => (a -> f b) -> w a -> f (w b)
-collectRep f = distributeRep {r=r} . map f
+collectRep f = distributeRep {r} . map f
 
 export
 duplicateRepBy : Representable f r => (r -> r -> r) -> f a -> f (f a)
@@ -121,27 +121,27 @@ extractRepBy = flip index
 
 export
 duplicatedRep : (Representable f r, Semigroup r) => f a -> f (f a)
-duplicatedRep = duplicateRepBy {r=r} (<+>)
+duplicatedRep = duplicateRepBy {r} (<+>)
 
 export
 extendedRep : (Representable f r, Semigroup r) => (f a -> b) -> f a -> f b
-extendedRep = extendRepBy {r=r} (<+>)
+extendedRep = extendRepBy {r} (<+>)
 
 export
 duplicateRep : (Representable f r, Monoid r) => f a -> f (f a)
-duplicateRep = duplicateRepBy {r=r} (<+>)
+duplicateRep = duplicateRepBy {r} (<+>)
 
 export
 extendRep : (Representable f r, Monoid r) => (f a -> b) -> f a -> f b
-extendRep = extendRepBy {r=r} (<+>)
+extendRep = extendRepBy {r} (<+>)
 
 export
 extractRep : (Representable f r, Monoid r) => f a -> a
-extractRep = extractRepBy {r=r} neutral
+extractRep = extractRepBy {r} neutral
 
 export
 imapRep : Representable f r => (r -> a -> b) -> f a -> f b
-imapRep f = mzipWithRep {r=r} f (askRep {r=r})
+imapRep f = mzipWithRep {r} f (askRep {r})
 
 export
 ifoldMapRep : (Representable f r, Foldable f, Monoid m)
@@ -181,7 +181,7 @@ implementation Functor1 (TabulateArg a) where
 export
 tabulateCotraverse1 : Representable f r => (Logarithm f -> a) -> f a
 tabulateCotraverse1 =
-  cotraverse1 {r=r} (\(MkTabulateArg g) => g (Log runIdentity)) . MkTabulateArg
+  cotraverse1 {r} (\(MkTabulateArg g) => g (Log runIdentity)) . MkTabulateArg
 
 export
 indexLogarithm : f a -> Logarithm f -> a
@@ -194,7 +194,7 @@ cotraverse1Iso : (Representable g r, Functor1 w)
   -> (w Identity -> a)
   -> w f
   -> f a
-cotraverse1Iso t frm f = frm . cotraverseMap1 {r=r} f t
+cotraverse1Iso t frm f = frm . cotraverseMap1 {r} f t
 
 -- Implementations
 export
@@ -280,7 +280,7 @@ implementation ComonadTrans Co where
 
 export
 liftR2 : Representable f r => (a -> b -> c) -> f a -> f b -> f c
-liftR2 = mzipWithRep {r=r}
+liftR2 = mzipWithRep {r}
 
 public export
 data TripleOf : (a : Type) -> (b : Type) -> (c : Type) -> (f : Type -> Type) -> Type where
@@ -292,5 +292,5 @@ implementation Functor1 (TripleOf a b c) where
 
 export
 liftR3 : Representable f r => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
-liftR3 f fa fb fc = cotraverse1 {r=r} (\(MkTripleOf (Id a) (Id b) (Id c)) => f a b c) (MkTripleOf fa fb fc)
+liftR3 f fa fb fc = cotraverse1 {r} (\(MkTripleOf (Id a) (Id b) (Id c)) => f a b c) (MkTripleOf fa fb fc)
 

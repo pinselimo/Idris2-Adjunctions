@@ -30,15 +30,15 @@ implementation (Functor f, Functor g, Functor w) => Functor (AdjointT f g w) whe
 
 export
 implementation (Adjunction f g r, Comonad w) => Comonad (AdjointT f g w) where
-  extend l (AdjoinT m) = AdjoinT $ map (extend $ leftAdjunct {f=f, r=r} (l . AdjoinT)) m
-  extract = rightAdjunct {r=r} extract . runAdjointT
-  duplicate (AdjoinT m) = AdjoinT $ map (extend $ leftAdjunct {f=f, r=r} (id . AdjoinT)) m
+  extend l (AdjoinT m) = AdjoinT $ map (extend $ leftAdjunct {f, r} (l . AdjoinT)) m
+  extract = rightAdjunct {r} extract . runAdjointT
+  duplicate (AdjoinT m) = AdjoinT $ map (extend $ leftAdjunct {f, r} (id . AdjoinT)) m
 
 export
 implementation (Distributive f, Adjunction f g r, Applicative m, Comonad m) => Applicative (AdjointT f g m) where
-  pure = AdjoinT . map pure . distribute . unit {f=f, r=r}
-  AdjoinT ff <*> AdjoinT fa = AdjoinT $ map (map $ rightAdjunct {r=r} extract ff) <$> fa
+  pure = AdjoinT . map pure . distribute . unit {f, r}
+  AdjoinT ff <*> AdjoinT fa = AdjoinT $ map (map $ rightAdjunct {r} extract ff) <$> fa
 
 export
 implementation (Adjunction f g r, Distributive g) => ComonadTrans (AdjointT f g) where
-  lower = counit {r=r} . map distribute . runAdjointT
+  lower = counit {r} . map distribute . runAdjointT

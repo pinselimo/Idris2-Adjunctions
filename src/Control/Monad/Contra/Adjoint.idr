@@ -29,14 +29,14 @@ implementation (Adjunction f g r, Functor w) => Functor (AdjointT f g w) where
 
 private
 bindAdjoint : (Adjunction f g r, Comonad w) => AdjointT f g w a -> (a -> AdjointT f g w b) -> AdjointT f g w b
-bindAdjoint (AdjoinT m) f = AdjoinT $ contramap (extend (rightAdjunct {r=r} (runAdjointT . f))) m
+bindAdjoint (AdjoinT m) f = AdjoinT $ contramap (extend (rightAdjunct {r} (runAdjointT . f))) m
 
 export
 implementation (Adjunction f g r, Comonad w) => Applicative (AdjointT f g w) where
-  pure = AdjoinT . leftAdjunct {f=f, r=r} extract
+  pure = AdjoinT . leftAdjunct {f, r} extract
   af <*> aa = bindAdjoint {r} af $ \fm                   -- do fm <- af
            => bindAdjoint {r} aa $                          -- a  <- aa
-              AdjoinT . leftAdjunct {f=f, r=r} extract . fm -- pure $ fm a
+              AdjoinT . leftAdjunct {f, r} extract . fm -- pure $ fm a
 
 export
 implementation (Adjunction f g r, Comonad w) => Monad (AdjointT f g w) where
