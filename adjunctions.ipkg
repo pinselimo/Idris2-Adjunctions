@@ -2,10 +2,20 @@ package adjunctions
 
 sourcedir = "src"
 
-modules = Data.Distributive
+modules = Control.Comonad.Contra.Adjoint
+        , Control.Comonad.Representable.Store
+        , Control.Comonad.Trans.Adjoint
+        , Control.Monad.Contra.Adjoint
+        , Control.Monad.Representable.Reader
+        , Control.Monad.Representable.State
+        , Control.Monad.Trans.Adjoint
+        , Control.Monad.Trans.Contravariant.Adjoint
+        , Control.Monad.Trans.Conts
+        , Data.Distributive
         , Data.Functor.Adjunction
         , Data.Functor.Contravariant
         , Data.Functor.Contravariant.Adjunction
+        , Data.Functor.Contravariant.DualAdjunction
         , Data.Functor.Contravariant.Rep
         , Data.Functor.Contravariant.Yoneda
         , Data.Functor.Product
@@ -13,5 +23,8 @@ modules = Data.Distributive
         , Data.Functor.Sum
         , Data.Functor1
         , Data.Functor1.Applied
+
+depends = comonad
+        , profunctors
 
 opts = "-p contrib profunctors comonad"
